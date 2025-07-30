@@ -1,6 +1,7 @@
 package com.usermanagement.controller;
 
 import com.usermanagement.entities.User;
+import com.usermanagement.exception.ResourceNotFoundException;
 import com.usermanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id)
     {
-        User user = userRepository.findById(id).orElse(null);
-        return user;
+        return userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User not found with given id"+ id));
+
     }
 
     @DeleteMapping("/{id}")
@@ -37,7 +38,7 @@ public class UserController {
             userRepository.deleteById(id);
             return "User deleted successfully.";
         } else {
-            return "User not found.";
+            throw new ResourceNotFoundException("User not found with given id:"+id);
         }
     }
 }
